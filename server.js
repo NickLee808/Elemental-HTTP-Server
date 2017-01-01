@@ -1,18 +1,29 @@
 //jshint esversion:6
 
 let fs = require('fs');
+
 let http = require('http');
 
-const POST = process.env.PORT || 3000;
-
+const PORT = process.env.PORT || 3000;
 
 const server = http.createServer( (req, res) => {
+  
+  console.log("CONNECTED");
+
+  req.setEncoding('utf8');
 
   let sendContent = (content) => {
-    if (res)
-    res.setHeader('Content-Type', 'text/html');
+
+    if (req.url.indexOf('css') > -1){
+      res.setHeader('Content-Type', 'text/css');
+    }else{
+      res.setHeader('Content-Type', 'text/html');
+    }
+
     res.write(content);
+
     res.end();
+  
   };
 
   let resourceMapping = {
@@ -26,21 +37,19 @@ const server = http.createServer( (req, res) => {
   };
 
   fs.readFile(resourceMapping[req.url], (err, content) => {
-
+    console.log(content);
     if(err){
       res.statusCode = 404;
       sendContent('Resource not found');
       return;
     }
 
-    sendContent(res, content);
+    sendContent(content);
 
   });  
 
-  let reqBody = '';
+});
 
-  req.setEncoding('utf8');
-
-  req.on();
-
+server.listen(PORT, () => {
+  console.log('Server is running');
 });
